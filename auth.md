@@ -1,6 +1,6 @@
 ---
 layout: standalone
-title: Account - The Muslim Post
+title: Account - The Hindi Post
 permalink: /auth.html
 ---
 
