@@ -224,7 +224,7 @@ html.dark-mode .subheadline-container::after {
             </div>
             <div class="news-card-text hero-news-card-text">
                 <span class="hero-kicker">प्रमुख समाचार</span>
-                <h3 class="news-card-headline hero-headline" style="font-family:'Merriweather',serif;font-weight:900;margin-bottom:0.5rem;">{{ latest_post.title }}</h3>
+                <h3 class="news-card-headline hero-headline" style="font-family:'Martel','Rozha One',serif;font-weight:800;margin-bottom:0.5rem;line-height:1.35;">{{ latest_post.title }}</h3>
                 <div class="subheadline-container hero-subheadline-container">
                     <p class="news-card-subheadline">{{ latest_post.subheadline | default: latest_post.content | strip_html | truncatewords: 35 }}</p>
                 </div>

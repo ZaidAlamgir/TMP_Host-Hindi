@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff" id="theme-color-meta">
+    
+    <!-- Preload Critical Headline & Body Fonts (Eliminates Font Flicker / FOUT) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/martel/v12/PN_yRfK9oXHga0XVwe4qgxzWxvk.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.gstatic.com/s/notosansdevanagari/v30/TuG7UUFzXI5FBtUq5a8bjKYTZjtRU6Sgv3NaV_SNmI0b8QQCQmHN5TV_9qo.woff2" as="font" type="font/woff2" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Martel:wght@700;800;900&family=Mukta:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&family=Rozha+One&display=block" rel="stylesheet">
     <title>{% if page.title contains 'The Hindi Post' %}{{ page.title }}{% elsif page.title %}{{ page.title }} - The Hindi Post{% else %}{{ site.title }}{% endif %}</title>
     
     <!-- Preload Critical LCP Images for Mobile Speed Boost -->
@@ -18,8 +25,20 @@
     
     <!-- Google AdSense Verification & Ads -->
     <meta name="google-adsense-account" content="ca-pub-4850323427784993">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4850323427784993"
-         crossorigin="anonymous"></script>
+    <script>
+        (function() {
+            var isApp = window.location.search.includes('app=true') || 
+                        (typeof window.AndroidInterface !== 'undefined') ||
+                        (window.parent !== window);
+            if (!isApp) {
+                var s = document.createElement('script');
+                s.async = true;
+                s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4850323427784993";
+                s.crossOrigin = "anonymous";
+                document.head.appendChild(s);
+            }
+        })();
+    </script>
     
     {% if page.url == "/" or page.url == "/index.html" %}
     <script type="application/ld+json">
@@ -107,8 +126,13 @@
                 if (typeof window.AndroidInterface !== 'undefined') {
                     document.documentElement.classList.add('is-android-app');
                 }
-                if (window.location.search.includes('app=true')) {
+                if (window.location.search.includes('app=true') || window.parent !== window) {
                     document.documentElement.classList.add('is-embed-app');
+                    document.addEventListener('DOMContentLoaded', function() {
+                        try {
+                            window.parent.postMessage({ type: 'TMP_ARTICLE_LOADED' }, '*');
+                        } catch (e) {}
+                    });
                 }
                 
                 const isDarkMode = window.AndroidInterface.getDarkModeStatus() === 'true';
@@ -159,6 +183,7 @@
     <link rel="stylesheet" href="{{ '/assets/style/home.css' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/style/dark-mode.css' | relative_url }}">   
     <link rel="stylesheet" href="{{ '/assets/style/tailwind.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/style/article.css' | relative_url }}">
     <!-- Load FontAwesome and Supabase asynchronously/deferred to prevent render blocking -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" media="print" onload="this.media='all'">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>

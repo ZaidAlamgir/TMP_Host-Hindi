@@ -223,7 +223,7 @@
                         ${formattedDate ? `<p class="news-card-date">${formattedDate}</p>` : ''}
                     </div>
                     <div class="news-card-text">
-                        <h3 class="news-card-headline" style="font-family:'Merriweather',serif;font-weight:900;font-size:1.15rem;margin-bottom:0.5rem;">${post.title}</h3>
+                        <h3 class="news-card-headline" style="font-family:'Martel','Rozha One',serif;font-weight:800;font-size:1.15rem;line-height:1.35;margin-bottom:0.5rem;">${post.title}</h3>
                         <div class="subheadline-container">
                             <p class="news-card-subheadline" style="font-size:0.95rem;color:#606770;line-height:1.5;margin:0;">${subheadline}</p>
                         </div>

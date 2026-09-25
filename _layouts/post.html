@@ -71,14 +71,29 @@ layout: default
 }
 </script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600&display=swap');
-
     .article-container { max-width: 1000px; margin: 0 auto; padding: 0.5rem 1rem 2rem 1rem; color: #111827; flex-grow: 1; }
     
     /* --- HEADLINE & SUBHEADLINE STYLES --- */
-    .article-headline { font-family: 'Merriweather', serif; font-weight: 900; font-size: 56px; line-height: 1.2; margin-bottom: 0.75rem; word-wrap: break-word; }
-    /* UPDATED: Reduced margin-bottom from 1.5rem to 0.5rem */
-    .article-subheadline { font-family: 'Inter', sans-serif; font-size: 18px; color: #4b5563; line-height: 1.6; margin-top: 0; margin-bottom: 0.5rem; font-weight: 400; }
+    .article-headline { 
+        font-family: 'Martel', 'Rozha One', serif; 
+        font-weight: 800; 
+        font-size: 44px; 
+        line-height: 1.35; 
+        margin-bottom: 0.85rem; 
+        word-wrap: break-word; 
+        color: #111827;
+        letter-spacing: -0.01em;
+    }
+    
+    .article-subheadline { 
+        font-family: 'Mukta', sans-serif; 
+        font-size: 21px; 
+        color: #4b5563; 
+        line-height: 1.55; 
+        margin-top: 0; 
+        margin-bottom: 0.85rem; 
+        font-weight: 500; 
+    }
 
     /* Support both Legacy <b>/<i> and New Markdown <strong>/<em> */
     .article-headline b, .article-headline strong { font-weight: 900; color: inherit; }
@@ -93,7 +108,13 @@ layout: default
     .article-subheadline a { color: #1d4ed8; text-decoration: underline; }
 
     /* --- BODY STYLES & CMS GAP CONTROLLER --- */
-    .article-body { font-family: 'Merriweather', serif; font-size: 18px; line-height: 1.8; color: #111827; }
+    .article-body { 
+        font-family: 'Noto Sans Devanagari', 'Mukta', sans-serif; 
+        font-size: 19px; 
+        line-height: 1.95; 
+        color: #1f2937; 
+        letter-spacing: 0.01em;
+    }
     
     /* 1. Natural Markdown Paragraphs (New CMS) gap between two paragraphs */
     .article-body p { margin-bottom: 0.75rem; } 
@@ -305,7 +326,11 @@ layout: default
         flex-shrink: 0;
     }
 
-    @media (max-width: 768px) { .article-headline { font-size: 32px; } .article-subheadline { font-size: 18px; } }
+    @media (max-width: 768px) { 
+        .article-headline { font-size: 28px; line-height: 1.35; } 
+        .article-subheadline { font-size: 18px; line-height: 1.45; } 
+        .article-body { font-size: 17px; line-height: 1.85; }
+    }
 </style>
 
 {% if content contains 'twitter-tweet' %}
