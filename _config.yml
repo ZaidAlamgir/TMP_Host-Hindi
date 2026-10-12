@@ -1,5 +1,5 @@
 title: The Hindi Post | TMP News
-description: "The Hindi Post (TMP News) is a community of thinkers, learners, and experts. Discover insightful posts and contribute your own perspective on World Politics, Indian Politics, and Global Affairs."
+description: "द हिंदी पोस्ट (TMP News): देश-विदेश की ताज़ा ख़बरें, भारतीय राजनीति, अंतरराष्ट्रीय कूटनीति, अर्थव्यवस्था और विश्लेषण की निष्पक्ष और विश्वसनीय रिपोर्टिंग।"
 permalink: /news/:categories/:title/
 
 # Site-wide SEO keywords
@@ -40,6 +40,7 @@ include:
   - auth-callback.html
   - write.html
   - founder.html
+  - _headers
 # Exclude from processing.
 exclude:
   - .sass-cache/

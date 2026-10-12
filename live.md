@@ -2,7 +2,7 @@
 layout: default
 title: लाइव अपडेट्स
 permalink: /live/
-description: "Follow the latest live updates, breaking news, and real-time coverage from TMP News."
+description: "द हिंदी पोस्ट लाइव अपडेट्स: देश और दुनिया की बड़ी घटनाओं, ब्रेकिंग न्यूज़, महत्वपूर्ण बयानों और ताज़ा घटनाक्रम का पल-पल का सीधा और विश्वसनीय कवरेज देखें।"
 image: /assets/images/live/TMPnewsliveBanner.webp
 extra_css:
   - /assets/style/live.css

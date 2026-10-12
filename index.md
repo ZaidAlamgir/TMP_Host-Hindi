@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Home - The Hindi Post
+description: "द हिंदी पोस्ट (TMP News): देश-विदेश की ताज़ा ख़बरें, भारतीय राजनीति, अंतरराष्ट्रीय कूटनीति, अर्थव्यवस्था और विश्लेषण की निष्पक्ष और विश्वसनीय रिपोर्टिंग।"
 ---
 <script type="application/ld+json">
 {
