@@ -22,7 +22,7 @@ extra_js:
     </div>
     <div id="feed-controls" class="text-center mt-8 px-4">
         <button id="load-more-btn" class="professional-btn" onclick="if(window.triggerLoadMoreLivePosts) window.triggerLoadMoreLivePosts(event)">पिछले अपडेट्स लोड करें</button>
-        <a href="https://archive-live.tmpnews.com" id="archive-btn" class="professional-btn" style="display: none;">पुराने अपडेट्स का आर्काइव देखें</a>
+        <a href="https://archive-live.tmpnews.com/?lang=hi" id="archive-btn" class="professional-btn" style="display: none;">पुराने अपडेट्स का आर्काइव देखें</a>
         <p id="no-more-posts-msg" class="text-gray-500 font-bold py-4 uppercase text-sm" style="display: none;">लाइव कवरेज समाप्त।</p>
     </div>
 </div>
