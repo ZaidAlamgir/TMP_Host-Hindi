@@ -14,6 +14,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Martel:wght@700;800;900&family=Mukta:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&family=Rozha+One&display=block" rel="stylesheet">
     <title>{% if page.title contains 'The Hindi Post' %}{{ page.title }}{% elsif page.title %}{{ page.title }} - The Hindi Post{% else %}{{ site.title }}{% endif %}</title>
     
+    <!-- DNS Prefetch and Resource Preconnect for Core Web Vitals (LCP) -->
+    <link rel="preconnect" href="https://assets1.tmpnews.com" crossorigin>
+    <link rel="dns-prefetch" href="https://assets1.tmpnews.com">
+    <link rel="preconnect" href="https://media.tmpnews.com" crossorigin>
+    <link rel="dns-prefetch" href="https://media.tmpnews.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
     <!-- Preload Critical LCP Images for Mobile Speed Boost -->
     {% if page.layout == 'post' and page.image %}
       <link rel="preload" href="{{ page.image }}" as="image" fetchpriority="high">
