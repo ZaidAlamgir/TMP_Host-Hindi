@@ -12,3 +12,4 @@ Allow: /
 
 Sitemap: https://thehindipost.tmpnews.com/sitemap.xml
 Sitemap: https://thehindipost.tmpnews.com/news-sitemap.xml
+Sitemap: https://thehindipost.tmpnews.com/sitemaps/archive.xml
