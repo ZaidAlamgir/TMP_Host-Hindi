@@ -218,6 +218,8 @@ html.dark-mode .subheadline-container::after {
 }
 </style>
 
+{% include live-top-widget.html %}
+
 <div class="support-cta-banner">
     <p>निष्पक्ष और स्वतंत्र पत्रकारिता आज पहले से कहीं अधिक महत्वपूर्ण है। The Hindi Post का सहयोग करें।</p>
     <a href="{{ '/support/' | relative_url }}" class="support-cta-button">सहयोग करें</a>

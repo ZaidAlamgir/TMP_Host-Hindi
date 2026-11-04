@@ -533,9 +533,9 @@
         const noMorePostsMsg = document.getElementById('no-more-posts-msg');
         const INITIAL_LOAD_COUNT = 60; 
         const SUBSEQUENT_LOAD_COUNT = 60;
-        const CACHE_KEY = 'cachedLiveFeed_hi_v8';
-        const PREFETCH_KEY = 'prefetchedLiveFeed_hi_v8';
-        const PREFETCH_TIMESTAMP_KEY = 'prefetchedLiveFeedTimestamp_hi_v8';
+        const CACHE_KEY = 'cachedLiveFeed_hi_v9';
+        const PREFETCH_KEY = 'prefetchedLiveFeed_hi_v9';
+        const PREFETCH_TIMESTAMP_KEY = 'prefetchedLiveFeedTimestamp_hi_v9';
         const CACHE_TTL_MS = 60000; // 60s Stale-While-Revalidate cache validity
 
         // State declarations initialized before any usage
@@ -871,40 +871,61 @@
                 .catch(error => { console.error("View log failed:", error); viewedPosts.delete(postId); sessionStorage.setItem('viewedLivePosts', JSON.stringify(Array.from(viewedPosts))); });
         }
 
-        function extractLangContent(raw, lang = 'en') {
-            if (!raw) return '';
+        function extractLangContent(raw, targetLang = 'hi') {
+            if (!raw || typeof raw !== 'string') return '';
             const tagMap = {
                 'en': ['english', 'en'],
                 'hi': ['hindi', 'hi'],
                 'ur': ['urdu', 'ur']
             };
-            const tags = tagMap[lang] || [lang];
+            const tags = tagMap[targetLang] || [targetLang];
 
+            // 1. Explicit HTML tags like <hindi>...</hindi>
             for (const t of tags) {
                 const tagRegex = new RegExp(`(?:<${t}[^>]*>)([\\s\\S]*?)(?:<\\/${t}>)`, 'i');
                 const match = raw.match(tagRegex);
                 if (match && match[1].trim()) {
                     let clean = match[1].trim();
-                    clean = clean.replace(/<(?:hindi|hi|urdu|ur)[^>]*>[\s\S]*?<\/(?:hindi|hi|urdu|ur)>/gi, '');
-                    clean = clean.replace(/<!--(?:hindi|hi|urdu|ur)-->[\s\S]*?<!--\/(?:hindi|hi|urdu|ur)-->/gi, '');
+                    clean = clean.replace(/<(?:hindi|hi|urdu|ur|english|en)[^>]*>[\s\S]*?<\/(?:hindi|hi|urdu|ur|english|en)>/gi, '');
+                    clean = clean.replace(/<!--(?:hindi|hi|urdu|ur|english|en)-->[\s\S]*?<!--\/(?:hindi|hi|urdu|ur|english|en)-->/gi, '');
                     return clean.trim();
                 }
             }
 
+            // 2. Explicit comments like <!--hindi-->...<!--/hindi-->
             for (const t of tags) {
                 const commentRegex = new RegExp(`<!--${t}-->([\\s\\S]*?)<!--\\/${t}-->`, 'i');
                 const match = raw.match(commentRegex);
                 if (match && match[1].trim()) {
                     let clean = match[1].trim();
-                    clean = clean.replace(/<(?:hindi|hi|urdu|ur)[^>]*>[\s\S]*?<\/(?:hindi|hi|urdu|ur)>/gi, '');
-                    clean = clean.replace(/<!--(?:hindi|hi|urdu|ur)-->[\s\S]*?<!--\/(?:hindi|hi|urdu|ur)-->/gi, '');
+                    clean = clean.replace(/<(?:hindi|hi|urdu|ur|english|en)[^>]*>[\s\S]*?<\/(?:hindi|hi|urdu|ur|english|en)>/gi, '');
+                    clean = clean.replace(/<!--(?:hindi|hi|urdu|ur|english|en)-->[\s\S]*?<!--\/(?:hindi|hi|urdu|ur|english|en)-->/gi, '');
                     return clean.trim();
                 }
             }
 
-            if (lang === 'en') {
-                let clean = raw;
-                clean = clean.replace(/<(?:hindi|hi|urdu|ur)[^>]*>[\s\S]*?<\/(?:hindi|hi|urdu|ur)>/gi, '');
+            // 3. Fallback: Clean string for target language
+            if (targetLang === 'hi') {
+                let clean = raw
+                    .replace(/<(?:urdu|ur|english|en)[^>]*>[\s\S]*?<\/(?:urdu|ur|english|en)>/gi, '')
+                    .replace(/<!--(?:urdu|ur|english|en)-->[\s\S]*?<!--\/(?:urdu|ur|english|en)-->/gi, '')
+                    .replace(/<\/?(?:hindi|hi)>/gi, '')
+                    .replace(/<!--\/?(?:hindi|hi)-->/gi, '');
+                return clean.trim();
+            }
+
+            if (targetLang === 'ur') {
+                let clean = raw
+                    .replace(/<(?:hindi|hi|english|en)[^>]*>[\s\S]*?<\/(?:hindi|hi|english|en)>/gi, '')
+                    .replace(/<!--(?:hindi|hi|english|en)-->[\s\S]*?<!--\/(?:hindi|hi|english|en)-->/gi, '')
+                    .replace(/<\/?(?:urdu|ur)>/gi, '')
+                    .replace(/<!--\/?(?:urdu|ur)-->/gi, '');
+                return clean.trim();
+            }
+
+            if (targetLang === 'en') {
+                let clean = raw
+                    .replace(/<(?:hindi|hi|urdu|ur)[^>]*>[\s\S]*?<\/(?:hindi|hi|urdu|ur)>/gi, '');
                 clean = clean.replace(/<!--(?:hindi|hi|urdu|ur)-->[\s\S]*?<!--\/(?:hindi|hi|urdu|ur)-->/gi, '');
                 clean = clean.replace(/<\/?(?:english|en)>/gi, '');
                 clean = clean.replace(/<!--\/?(?:english|en)-->/gi, '');
@@ -918,40 +939,45 @@
                 return clean.trim();
             }
 
-            return '';
+            return raw.trim();
         }
 
         function hasHindiTranslation(postData) {
             if (!postData) return false;
-            if (postData.lang && postData.lang !== 'en') return false;
-            if (postData.parent_id) return false;
 
-            const enHeadline = extractLangContent(postData.headline, 'en');
-            const enContent = extractLangContent(postData.content, 'en');
+            // Direct language match from worker API
+            if (postData.lang === 'hi') return true;
+            if (postData.lang === 'ur' || postData.lang === 'en') {
+                // If marked as ur or en, only accept if it embeds a <hi>/<hindi> block
+                const rawCombined = (postData.headline || '') + ' ' + (postData.content || '');
+                return /<(?:hindi|hi)>|<!--(?:hindi|hi)-->/i.test(rawCombined);
+            }
 
-            const cleanHeadline = (enHeadline || '').replace(/<[^>]*>/g, '').trim();
-            const cleanContent = (enContent || '').replace(/<[^>]*>/g, '').trim();
-
-            const hasLatinHeadline = /[a-zA-Z]/.test(cleanHeadline);
-            const hasLatinContent = /[a-zA-Z]/.test(cleanContent);
-            const hasMedia = Boolean(enContent && (
-                enContent.includes('<img') || 
-                enContent.includes('telegram-embed-placeholder') || 
-                enContent.includes('data-tg-post') || 
-                enContent.includes('telegram') || 
-                enContent.includes('twitter') || 
-                enContent.includes('iframe')
-            ));
+            const hiHeadline = extractLangContent(postData.headline, 'hi');
+            const hiContent = extractLangContent(postData.content, 'hi');
+            const textOnly = ((hiHeadline || '') + ' ' + (hiContent || '')).replace(/<[^>]*>/g, '').trim();
 
             const devanagari = /[\u0900-\u097F]/;
             const arabicUrdu = /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/;
-            const textOnly = (cleanHeadline + ' ' + cleanContent).trim();
 
-            if ((devanagari.test(textOnly) || arabicUrdu.test(textOnly)) && !/[a-zA-Z]/.test(textOnly)) {
-                return false;
+            // If it contains Devanagari Hindi characters
+            if (devanagari.test(textOnly)) return true;
+
+            // If it's a media post with no Arabic/Urdu characters
+            const hasMedia = Boolean(hiContent && (
+                hiContent.includes('<img') || 
+                hiContent.includes('telegram-embed-placeholder') || 
+                hiContent.includes('data-tg-post') || 
+                hiContent.includes('telegram') || 
+                hiContent.includes('twitter') || 
+                hiContent.includes('iframe')
+            ));
+
+            if (hasMedia && !arabicUrdu.test(textOnly) && textOnly.length < 50) {
+                return true;
             }
 
-            return Boolean(hasLatinHeadline || hasLatinContent || hasMedia || postData.lang === 'en');
+            return false;
         }
 
         function formatRelativeTime(dateString) {
@@ -960,21 +986,21 @@
             const postDate = new Date(dateString);
             const diffInSeconds = Math.floor((now - postDate) / 1000);
             if (isNaN(diffInSeconds)) return '';
-            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 60) return 'अभी';
             const diffInMinutes = Math.floor(diffInSeconds / 60);
-            if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+            if (diffInMinutes < 60) return `${diffInMinutes} मिनट पहले`;
             const diffInHours = Math.floor(diffInMinutes / 60);
-            if (diffInHours < 24) return `${diffInHours}h ago`;
+            if (diffInHours < 24) return `${diffInHours} घंटे पहले`;
             const diffInDays = Math.floor(diffInHours / 24);
-            if (diffInDays < 7) return `${diffInDays}d ago`;
-            return postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            if (diffInDays < 7) return `${diffInDays} दिन पहले`;
+            return postDate.toLocaleDateString('hi-IN', { month: 'short', day: 'numeric' });
         }
 
         function renderPost(postData, container, insertAtTop = false) {
             if (!hasHindiTranslation(postData)) return;
 
-            const postHeadline = extractLangContent(postData.headline, 'en');
-            const postContent = extractLangContent(postData.content, 'en');
+            const postHeadline = extractLangContent(postData.headline, 'hi') || (postData.lang === 'hi' ? postData.headline : '');
+            const postContent = extractLangContent(postData.content, 'hi') || (postData.lang === 'hi' ? postData.content : '');
             if (!postHeadline && !postContent) return;
 
             const postElement = document.createElement('div');
@@ -1294,7 +1320,7 @@
                      postsContainer.innerHTML = '';
                      if (feedControls) feedControls.style.display = 'block';
                      loadMoreBtn.style.display = 'none'; 
-                     noMorePostsMsg.textContent = "No updates have been posted yet."; 
+                     noMorePostsMsg.textContent = "अभी कोई नया अपडेट उपलब्ध नहीं है।"; 
                      noMorePostsMsg.style.display = 'block';
                      return;
                  }
@@ -1465,7 +1491,7 @@
             window._activeLiveChannel = supabaseClient.channel('live_updates_listener_' + Date.now())
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'live_posts' }, (payload) => {
                     const newPostData = payload.new;
-                    if (newPostData && ((newPostData.lang && newPostData.lang !== 'en') || newPostData.parent_id)) {
+                    if (newPostData && newPostData.lang && newPostData.lang !== 'hi' && !hasHindiTranslation(newPostData)) {
                         return;
                     }
                     sessionStorage.removeItem(CACHE_KEY); 
@@ -1512,8 +1538,8 @@
                             else {
                                 const hlEl = existingElement.querySelector('.live-post-headline');
                                 const bodyEl = existingElement.querySelector('.post-body');
-                                const newHl = extractLangContent(newPostData.headline, 'en');
-                                const newCnt = extractLangContent(newPostData.content, 'en');
+                                const newHl = extractLangContent(newPostData.headline, 'hi') || (newPostData.lang === 'hi' ? newPostData.headline : '');
+                                const newCnt = extractLangContent(newPostData.content, 'hi') || (newPostData.lang === 'hi' ? newPostData.content : '');
                                 
                                 if (hlEl && newHl) {
                                     hlEl.textContent = newHl;
