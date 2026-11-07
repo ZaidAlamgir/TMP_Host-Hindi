@@ -1,0 +1,46 @@
+---
+layout: default
+title: पृष्ठ नहीं मिला
+permalink: /404.html
+---
+
+<div class="content-wrapper" style="text-align: center; padding: 4rem 1.5rem; max-width: 720px; margin: 0 auto;">
+    <div style="font-size: 4rem; font-weight: 800; color: #dc2626; margin-bottom: 0.5rem;">404</div>
+    <h1 style="font-size: 1.85rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b;">लेख स्थानीय स्तर पर नहीं मिला</h1>
+    <p id="local-redirect-status" style="font-size: 1rem; color: #64748b; line-height: 1.6; margin-bottom: 2rem;">
+        अनुरोधित पृष्ठ स्थानीय स्थिर निर्माण में मौजूद नहीं है। लाइव साइट पर पुराने लेख Cloudflare D1 द्वारा प्रस्तुत किए जाते हैं।
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a id="live-article-btn" href="https://thehindipost.tmpnews.com" class="explore-hub-btn" style="display: none;">
+            <i class="fas fa-external-link-alt mr-1"></i> लाइव The Hindi Post पर खोलें
+        </a>
+        <a href="{{ '/' | relative_url }}" class="explore-hub-btn" style="background: #475569;">
+            <i class="fas fa-home mr-1"></i> होमपेज पर वापस जाएं
+        </a>
+    </div>
+</div>
+
+<script>
+(function() {
+    const path = window.location.pathname;
+    const isLocal = window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1' || 
+                    /^\d+\.\d+\.\d+\.\d+$/.test(window.location.hostname);
+
+    if (isLocal && path.startsWith('/news/')) {
+        const liveUrl = 'https://thehindipost.tmpnews.com' + path;
+        const statusEl = document.getElementById('local-redirect-status');
+        const liveBtn = document.getElementById('live-article-btn');
+        if (statusEl) {
+            statusEl.innerHTML = 'यह लेख Cloudflare D1 आर्काइव में संग्रहीत है। लाइव साइट <strong>thehindipost.tmpnews.com</strong> पर रीडायरेक्ट हो रहा है...';
+        }
+        if (liveBtn) {
+            liveBtn.href = liveUrl;
+            liveBtn.style.display = 'inline-flex';
+        }
+        setTimeout(() => {
+            window.location.replace(liveUrl);
+        }, 1200);
+    }
+})();
+</script>
